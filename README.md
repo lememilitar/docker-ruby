@@ -20,11 +20,7 @@ at least these contents:
 {
   "name": "Your App's Name",
   "description": "An example app.json for heroku-docker",
-<<<<<<< HEAD
   "image": "lememilitar/ruby"
-=======
-  "image": "heroku/ruby"
->>>>>>> origin/master
 }
 ```
 
