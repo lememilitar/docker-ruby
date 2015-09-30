@@ -2,23 +2,12 @@ FROM heroku/cedar:14
 
 MAINTAINER George Moura <george@lememilitar.com>
 
-#============= ENV VARS =======================
+RUN mkdir -p /app/user
+WORKDIR /app/user
+
 ENV RUBY_VERSION ruby-2.2.3
 ENV FREETDS_VERSION freetds-0.91.112
 ENV TDSVER 7.0
-
-#============= Intalll TDS ====================
-
-RUN curl -s ftp://ftp.freetds.org/pub/freetds/stable/$FREETEDS_VERSION.tar.gz | tar xvz -C /tmp
-WORKDIR /tmp/$FREETEDS_VERSION
-RUN ./configure --disable-shared --disable-installed --with-tdsver=7.0 --enable-msdblib --with-gnu-ld
-RUN make DESTDIR=/app install
-RUN touch /app/$FREETEDS_VERSION/include/tds.h
-RUN touch /app/$FREETEDS_VERSION/lib/libtds.a
-RUN echo "export PATH=\"/app/usr/local/bin:\$PATH\"" >> /app/.profile.d/freetds.sh
-
-RUN mkdir -p /app/user
-WORKDIR /app/user
 
 ENV GEM_PATH /app/heroku/ruby/bundle/ruby/2.2.0
 ENV GEM_HOME /app/heroku/ruby/bundle/ruby/2.2.0
@@ -53,6 +42,16 @@ ONBUILD RUN bundle exec rake assets:precompile
 RUN mkdir -p /app/.profile.d/
 RUN echo "cd /app/user/" > /app/.profile.d/home.sh
 ONBUILD RUN echo "export PATH=\"$PATH\" GEM_PATH=\"$GEM_PATH\" GEM_HOME=\"$GEM_HOME\" RAILS_ENV=\"\${RAILS_ENV:-$RAILS_ENV}\" SECRET_KEY_BASE=\"\${SECRET_KEY_BASE:-$SECRET_KEY_BASE}\" BUNDLE_APP_CONFIG=\"$BUNDLE_APP_CONFIG\"" > /app/.profile.d/ruby.sh
+
+# Intalll TDS
+
+RUN curl -s ftp://ftp.freetds.org/pub/freetds/stable/$FREETDS_VERSION.tar.gz | tar xvz -C /tmp
+WORKDIR /tmp/$FREETDS_VERSION
+RUN ./configure --disable-shared --disable-installed --with-tdsver=$TDSVER --enable-msdblib --with-gnu-ld
+RUN make DESTDIR=/app install
+RUN touch /app/usr/local/include/tds.h
+RUN touch /app/usr/local/lib/libtds.a
+RUN echo "export PATH=\"/app/usr/local/bin:\$PATH\"" >> /app/.profile.d/freetds.sh
 
 COPY ./init.sh /usr/bin/init.sh
 RUN chmod +x /usr/bin/init.sh
