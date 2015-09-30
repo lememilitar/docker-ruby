@@ -5,7 +5,7 @@ MAINTAINER George Moura <george@lememilitar.com>
 RUN mkdir -p /app/user
 WORKDIR /app/user
 
-ENV RUBY_VERSION ruby-2.2.3
+ENV RUBY_VERSION ruby-2.2.2
 ENV FREETDS_VERSION freetds-0.91.112
 ENV TDSVER 7.0
 
