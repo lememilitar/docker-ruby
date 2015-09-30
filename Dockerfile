@@ -36,7 +36,7 @@ ONBUILD ADD . /app/user
 # How to conditionally `rake assets:precompile`?
 ONBUILD ENV RAILS_ENV production
 ONBUILD ENV SECRET_KEY_BASE $(openssl rand -base64 32)
-ONBUILD RUN bundle exec rake assets:precompile
+ONBUILD RUN if [ -f /app/user/Rakefile ]; then bundle exec rake assets:precompile; fi
 
 # export env vars during run time
 RUN mkdir -p /app/.profile.d/
@@ -52,6 +52,8 @@ RUN make DESTDIR=/app install
 RUN touch /app/usr/local/include/tds.h
 RUN touch /app/usr/local/lib/libtds.a
 RUN echo "export PATH=\"/app/usr/local/bin:\$PATH\"" >> /app/.profile.d/freetds.sh
+
+WORKDIR /app/user
 
 COPY ./init.sh /usr/bin/init.sh
 RUN chmod +x /usr/bin/init.sh
