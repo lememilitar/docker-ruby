@@ -36,7 +36,7 @@ ONBUILD ADD . /app/user
 # How to conditionally `rake assets:precompile`?
 ONBUILD ENV RAILS_ENV production
 ONBUILD ENV SECRET_KEY_BASE $(openssl rand -base64 32)
-ONBUILD RUN if [ -f /app/user/Rakefile ]; then bundle exec rake assets:precompile; fi
+ONBULD RUN test -f /app/user/Rakefile && (test "$(bundle exec rake -T | grep assets:precompile)" && bundle exec rake assets:precompile)
 
 # export env vars during run time
 RUN mkdir -p /app/.profile.d/
